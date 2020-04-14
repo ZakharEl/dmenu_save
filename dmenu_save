@@ -1,0 +1,29 @@
+#!/bin/bash
+pidof dmenu &>/dev/null && exit 1
+p="$1"
+create_prompt() {
+	[ $(dmenu -i -p "Doesn't exist. Create? " <<< $'yes\nno') == 'yes' ]
+}
+while
+	p="$(dmenu_file "$p")" && echo "$p" && exit
+	[ $? -eq 2 ] && create_prompt
+do
+	case $(dmenu -i -p "As file or directory? " <<< $'directory\nfile') in
+	'file')
+		echo "$p" && exit;;
+	'directory')
+		d="$p"
+		p="$(dmenu -i -p 'Choose a path: ' <<< '')"
+		[ "${p:0:1}" == '/' ] || p="$d/$p"
+		p="$(realpath -sm "$p")"
+		[ "$p" == "$d" ] && break
+		[ -d "$p" ] && create_prompt() {
+			[ $(dmenu -i -p "Doesn't exist. Create? " <<< $'yes\nno') == 'yes' ]
+		} || create_prompt() {
+			true
+		};;
+	*)
+		break;;
+	esac
+done
+exit 1
