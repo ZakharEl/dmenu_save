@@ -2,7 +2,7 @@
 pidof dmenu &>/dev/null && exit 1
 p="$1"
 create_prompt() {
-	p="$(dmenu_file "$p")" && echo "$p" && exit
+	p="$(dmenu-file "$p")" && echo "$p" && exit
 	[ $? -eq 2 ] &&	[ $(dmenu -i -p "Doesn't exist. Create? " <<< $'yes\nno') == 'yes' ]
 }
 while create_prompt
@@ -17,7 +17,7 @@ do
 		p="$(realpath -sm "$p")"
 		[ "$p" == "$d" ] && break
 		[ -d "$p" ] && create_prompt() {
-			p="$(dmenu_file "$p")" && echo "$p" && exit
+			p="$(dmenu-file "$p")" && echo "$p" && exit
 			[ $? -eq 2 ] &&	[ $(dmenu -i -p "Doesn't exist. Create? " <<< $'yes\nno') == 'yes' ]
 		} || create_prompt() {
 			true
